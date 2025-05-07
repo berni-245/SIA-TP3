@@ -2,7 +2,8 @@
 
 ## 👋 Introducción
 
-Trabajo práctico para la materia de Sistemas de Inteligencia Artificial en el ITBA.na con píxeles LAB.
+Trabajo práctico para la materia de Sistemas de Inteligencia Artificial en el ITBA.
+
 // Agregar info
 
 Este fue el [Enunciado](docs/Enunciado%20TP3.pdf)
@@ -13,7 +14,7 @@ Este fue el [Enunciado](docs/Enunciado%20TP3.pdf)
 - pip3
 - [pipenv](https://pypi.org/project/pipenv)
 
-### ⬇️ Instalación
+### 💻 Instalación
 
 En caso de no tener python, descargarlo desde la [página oficial](https://www.python.org/downloads/release/python-3119/)
 
@@ -33,6 +34,7 @@ para instalar las dependencias necesarias en el ambiente virtual.
 
 ## 🛠️ Configuración
 Se puede cambiar la configuración con la que se corre el algoritmo desde el [`config.json`](configs/config.json).
+
 // Agregar info
 
 ## 🏃 Ejecución
