@@ -42,12 +42,29 @@ class SimplePerceptron(ABC):
     def has_next(self) -> bool:
         pass
         
-    @abstractmethod
     def next_epoch(self) -> NDArray[np.float64]:
+        if not self.has_next():
+            raise Exception("Solution was already found or max epochs were reached")
+        self.error = 0
+        self.current_epoch += 1
+        for i, row in self.dataset.iterrows():
+            inputs = row[self.col_labels].values.astype(float)
+            output = self._calc_weighted_sum(inputs)
+            delta = row['ev'] - output
+            self._calc_weight_adjustment(inputs, delta)
+            self.error += self._calc_error_per_data(delta)        
+        return self.weights
+    
+    @abstractmethod
+    def _calc_error_per_data(self, delta: float) -> float:
         pass
 
     @abstractmethod
     def _calc_weighted_sum(self, inputs: np.ndarray) -> Any:
+        pass
+
+    @abstractmethod
+    def _calc_weight_adjustment(self, inputs: np.ndarray, delta: float) -> None:
         pass
 
     def try_current_epoch(self, inputs: List[float]):

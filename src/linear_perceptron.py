@@ -1,6 +1,3 @@
-from argparse import ArgumentTypeError
-import math
-from typing import List, Literal
 import pandas
 import numpy as np
 from numpy.typing import NDArray
@@ -15,23 +12,15 @@ class LinearPerceptron(SimplePerceptron):
         return np.abs(self.error) > 0.0001 and self.current_epoch < self.max_epochs
         
     def next_epoch(self) -> NDArray[np.float64]:
-        if not self.has_next():
-            raise Exception("Solution was already found or max epochs were reached")
-        total_err = 0
-        self.current_epoch += 1
-        print(f"epoch: {self.current_epoch}")
-        for i, row in self.dataset.iterrows():
-            inputs = row[self.col_labels].values.astype(float)
-            output = self._calc_weighted_sum(inputs)
-            delta = row['ev'] - output
-            print(f"partial error {i}: {abs(delta)}")
-            self.weights += self.learn_rate * delta * inputs
-            total_err += delta**2
-        
-        self.error = total_err/2
-        print(f"total error: {self.error}")
-        return self.weights
+        to_return = super().next_epoch()
+        self.error /= 2
+        return to_return
+    
+    def _calc_error_per_data(self, delta: float):
+        return delta**2
 
     def _calc_weighted_sum(self, inputs: np.ndarray) -> np.float64:
         return np.dot(self.weights, inputs)
 
+    def _calc_weight_adjustment(self, inputs: np.ndarray, delta: float) -> None:
+        self.weights += self.learn_rate * delta * inputs
