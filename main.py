@@ -40,12 +40,11 @@ def plot_decision_boundary(weights, epoch):
 # Mostrar en vivo
 plt.ion()
 plot_decision_boundary(perceptron.weights, perceptron.current_epoch)
-sleep(3)
 while perceptron.has_next():
     perceptron.next_epoch()
     plot_decision_boundary(perceptron.weights, perceptron.current_epoch)
-    sleep(3)
 print("End!")
-
+print(f"with 1 and -1, output: {perceptron.try_current_epoch([1, -1])}")
+print(f"with 1 and 1, output: {perceptron.try_current_epoch([1, 1])}")
 plt.ioff()
 plt.show()
