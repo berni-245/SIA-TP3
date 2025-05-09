@@ -6,7 +6,7 @@ from numpy.typing import NDArray
 
 
 class SimplePerceptron(ABC):
-    def __init__(self, dataset: pandas.DataFrame, learn_rate: float = 0.1, max_epochs = 1000) -> None:
+    def __init__(self, dataset: pandas.DataFrame, learn_rate: float = 0.1, max_epochs = 1000, random_weight_initialize: bool = True) -> None:
         """
         dataset: DataFrame with cols 'x1', 'x2', ..., 'xn' and 'ev' (expected value) as final col
 
@@ -30,7 +30,10 @@ class SimplePerceptron(ABC):
         dataset = dataset[expected_cols] # sorts the dataset cols in the given order
 
         self.col_labels = input_cols
-        self.weights = np.random.uniform(-1, 1, len(input_cols))
+        if random_weight_initialize:
+            self.weights = np.random.uniform(-1, 1, len(input_cols))
+        else:
+            self.weights = np.zeros(len(input_cols))
         self.dataset = dataset
         self.learn_rate = learn_rate
         self.max_epochs = max_epochs
@@ -74,3 +77,17 @@ class SimplePerceptron(ABC):
         inputs.insert(0, 1) # adds the bias parameter x0
 
         return self._activation_func(np.dot(self.weights, np.array(inputs)))
+    
+    def try_testing_set(self, testing_set: pandas.DataFrame):
+        """
+        testing_set: DataFrame con columnas 'x1', ..., 'xn' y 'ev' (expected value).
+        Devuelve una copia del DataFrame con una nueva columna 'pred' con los resultados del perceptrón.
+        """
+        predictions = []
+
+        for _, row in testing_set.iterrows():
+            inputs = row[self.col_labels[1:]].tolist()  # skip x0
+            prediction = self.try_current_epoch(inputs)
+            predictions.append(prediction)
+
+        return predictions

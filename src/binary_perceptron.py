@@ -6,7 +6,7 @@ from numpy.typing import NDArray
 from src.simple_perceptron import SimplePerceptron
 
 class BinaryPerceptron(SimplePerceptron):
-    def __init__(self, dataset: pandas.DataFrame, learn_rate: float = 0.1, max_epochs=1000) -> None:
+    def __init__(self, dataset: pandas.DataFrame, learn_rate: float = 0.1, max_epochs=1000, random_weight_initialize: bool = True) -> None:
         super().__init__(dataset, learn_rate, max_epochs)
 
     def has_next(self):

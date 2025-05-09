@@ -6,16 +6,23 @@ from src.perceptron_function import PerceptronFunction
 from src.simple_perceptron import SimplePerceptron
 
 class UniformPerceptron(SimplePerceptron):
-    def __init__(self, dataset: pandas.DataFrame, learn_rate: float = 0.1, max_epochs=1000, func: PerceptronFunction = PerceptronFunction.HYPERBOLIC, beta: float = 0.1) -> None:
+    def __init__(
+            self,
+            dataset: pandas.DataFrame,
+            learn_rate: float = 0.1,
+            max_epochs=1000,
+            random_weight_initialize: bool = True,
+            func: PerceptronFunction = PerceptronFunction.HYPERBOLIC,
+            beta: float = 0.1,
+            min_error: float = 0.0001,
+        ) -> None: 
         self.func = func
         self.beta = beta
-        super().__init__(dataset, learn_rate, max_epochs)
+        self.min_error = min_error
+        super().__init__(dataset, learn_rate, max_epochs, random_weight_initialize)
 
     def has_next(self):
-        return np.abs(self.error) > 0.0001 and self.current_epoch < self.max_epochs
-        
-    def next_epoch(self) -> NDArray[np.float64]:
-        return super().next_epoch()
+        return np.abs(self.error) > self.min_error and self.current_epoch < self.max_epochs
     
     def _calc_error_per_data(self, delta: float):
         return (delta**2) / 2
