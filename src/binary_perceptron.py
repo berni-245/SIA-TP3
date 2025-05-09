@@ -15,9 +15,8 @@ class BinaryPerceptron(SimplePerceptron):
     def _calc_error_per_data(self, delta: float) -> float:
         return abs(delta)
 
-    def _calc_weighted_sum(self, inputs: np.ndarray) -> Literal[-1, 1]:
-        output_raw = np.dot(self.weights, inputs)
-        return 1 if output_raw >= 0 else -1
+    def _activation_func(self, weighted_sum: np.float64) -> Literal[-1, 1]:
+        return 1 if weighted_sum >= 0 else -1
 
     def _calc_weight_adjustment(self, inputs: np.ndarray, delta: float) -> None:
         self.weights += self.learn_rate * delta * inputs

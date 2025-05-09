@@ -49,18 +49,18 @@ class SimplePerceptron(ABC):
         self.current_epoch += 1
         for i, row in self.dataset.iterrows():
             inputs = row[self.col_labels].values.astype(float)
-            output = self._calc_weighted_sum(inputs)
+            output = self._activation_func(np.dot(self.weights, inputs))
             delta = row['ev'] - output
             self._calc_weight_adjustment(inputs, delta)
             self.error += self._calc_error_per_data(delta)        
         return self.weights
     
     @abstractmethod
-    def _calc_error_per_data(self, delta: float) -> float:
+    def _calc_error_per_data(self, delta: float) -> float: # AKA, error for each row of the dataset
         pass
 
     @abstractmethod
-    def _calc_weighted_sum(self, inputs: np.ndarray) -> Any:
+    def _activation_func(self, weighted_sum: np.float64) -> Any:
         pass
 
     @abstractmethod
@@ -72,4 +72,5 @@ class SimplePerceptron(ABC):
         inputs: an array containing the numeric parameters x1, ..., xn you want to test with this epoch
         """
         inputs.insert(0, 1) # adds the bias parameter x0
-        return self._calc_weighted_sum(np.array(inputs))
+
+        return self._activation_func(np.dot(self.weights, np.array(inputs)))
