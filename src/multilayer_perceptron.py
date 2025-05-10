@@ -21,54 +21,49 @@ class NeuralNet:
             self.weights.append(weight_matrix)
             prev_neuron_count = neurons
 
-    def calc_neuron_values(self, input_values: NDArray[np.float64]) -> NDArray[np.float64]:
+    def forward_pass(self, input_values: NDArray[np.float64]) -> NDArray[np.float64]:
         """
         input_values: vector of input data (without bias)
         """
+        self.values: List[NDArray[np.float64]] = [input_values] # the input values and neuron values of each layer size equals to amount of layers + 1
+        self.sums: List[NDArray[np.float64]] = [] # the weighted sums without the activation, size equals to amount of layers
         current_values = input_values
         for weight_matrix in self.weights:
             current_values = np.insert(current_values, 0, 1.0)  # add bias
             z = np.dot(weight_matrix, current_values)
+            self.sums.append(z)
             current_values: NDArray[np.float64] = self.activation_func.func(z, beta=0.1)
+            self.values.append(current_values)
         return current_values  # salida final
 
 
-    def update_weights_per_data(  # TODO ESTE CÓDIGO NO ESTÁ HECHO POR MÍ PERO ESTOY CANSADO, LUEGO LO PIENSO BIEN
+    def update_weights_per_data (  
         self,
         input_values: NDArray[np.float64],
         expected_output: NDArray[np.float64],
         learning_rate: float = 0.1,
         beta: float = 0.1
     ):
-        activations = []  # Salidas de cada capa (después de aplicar activación)
-        inputs = []       # Entradas a cada capa (con bias)
+        final_output = self.forward_pass(input_values)
 
-        current_values = input_values
+        # Deltas for output layer
+        error = final_output - expected_output
+        deltas = error * self.activation_func.deriv(self.sums[-1], beta)
 
-        # FORWARD PASS
-        for weight_matrix in self.weights:
-            current_values = np.insert(current_values, 0, 1.0)  # Add bias
-            inputs.append(current_values)
-            z = np.dot(weight_matrix, current_values)
-            current_values = self.activation_func.func(z, beta)
-            activations.append(current_values)
+        # Backpropagate deltas and update weights
+        for i in reversed(range(len(self.weights))):
+            # Prepare values with bias
+            values = np.insert(self.values[i], 0, 1.0)
+            # If deltas is 3x1 and values 4x1, np.outer will transverse values to 1x4, to get the resulting matrix of size 3x4
+            self.weights[i] += learning_rate * np.outer(deltas, values) 
 
-        # BACKWARD PASS
-        deltas = []
-        error = activations[-1] - expected_output
-        delta = error * self.activation_func.deriv(activations[-1], beta)
-        deltas.append(delta)
+            if i > 0: # if we are not on the last layer, we should calculate delta
 
-        # Backpropagate deltas (from output to first hidden layer)
-        for i in reversed(range(len(self.weights) - 1)):
-            weights_wo_bias = self.weights[i + 1][:, 1:]  # Remove bias column
-            delta = (weights_wo_bias.T @ deltas[0]) * self.activation_func.deriv(activations[i], beta)
-            deltas.insert(0, delta)
+                # Remove bias weights from current layer, they don't have associated delta
+                weights_wo_bias = self.weights[i][:, 1:]
 
-        # WEIGHTS UPDATE    
-        for i in range(len(self.weights)):
-            gradient = np.outer(deltas[i], inputs[i])
-            self.weights[i] -= learning_rate * gradient
+                deltas = np.dot(weights_wo_bias.T, deltas) * self.activation_func.deriv(self.sums[i - 1], beta)
+
 
 
 
