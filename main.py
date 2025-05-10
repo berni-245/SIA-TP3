@@ -1,4 +1,3 @@
-from time import sleep
 import matplotlib.pyplot as plt
 import pandas as pd
 from src.binary_perceptron import BinaryPerceptron

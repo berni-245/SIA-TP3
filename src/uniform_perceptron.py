@@ -1,6 +1,5 @@
 import pandas
 import numpy as np
-from numpy.typing import NDArray
 
 from src.perceptron_function import PerceptronFunction
 from src.simple_perceptron import SimplePerceptron

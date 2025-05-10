@@ -1,7 +1,6 @@
 from typing import Literal
 import pandas
 import numpy as np
-from numpy.typing import NDArray
 
 from src.simple_perceptron import SimplePerceptron
 
