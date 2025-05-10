@@ -1,28 +1,33 @@
 from enum import Enum
-import math
-from typing import Callable
+import numpy as np
+from numpy.typing import NDArray
+from typing import Any, Callable, Union
 
 
 class PerceptronFunction(Enum):
     HYPERBOLIC = (
-        lambda x, beta: math.tanh(beta * x),
-        lambda x, beta: beta * (1 - math.tanh(beta * x) ** 2)
+        lambda x, beta: np.tanh(beta * x),
+        lambda x, beta: beta * (1 - np.tanh(beta * x) ** 2)
     )
     LOGISTICS = (
-    lambda x, beta: 1 / (1 + math.exp(-2 * beta * x)),
-    lambda x, beta: 2 * beta * (1 / (1 + math.exp(-2 * beta * x))) * (1 - (1 / (1 + math.exp(-2 * beta * x))))
+    lambda x, beta: 1 / (1 + np.exp(-2 * beta * x)),
+    lambda x, beta: 2 * beta * (1 / (1 + np.exp(-2 * beta * x))) * (1 - (1 / (1 + np.exp(-2 * beta * x))))
     )
     LINEAR = (
         lambda x, beta: x,
         lambda x, beta: 1
     )
 
-    def __init__(self, func: Callable[[float, float], float], deriv: Callable[[float, float], float]):
+    def __init__(
+        self,
+        func: Callable[[Union[float, NDArray[np.float64]], float], Union[float, NDArray[np.float64]]],
+        deriv: Callable[[Union[float, NDArray[np.float64]], float], Union[float, NDArray[np.float64]]]
+    ):
         self._func = func
         self._deriv = deriv
 
-    def func(self, x: float, beta: float) -> float:
+    def func(self, x: Union[float, NDArray[np.float64]], beta: float) -> Any:
         return self._func(x, beta)
 
-    def deriv(self, x: float, beta: float) -> float:
+    def deriv(self, x: Union[float, NDArray[np.float64]], beta: float) -> Any:
         return self._deriv(x, beta)
