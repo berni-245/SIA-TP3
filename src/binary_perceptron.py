@@ -5,8 +5,15 @@ import numpy as np
 from src.simple_perceptron import SimplePerceptron
 
 class BinaryPerceptron(SimplePerceptron):
-    def __init__(self, dataset: pandas.DataFrame, learn_rate: float = 0.1, max_epochs=1000, random_weight_initialize: bool = True) -> None:
-        super().__init__(dataset, learn_rate, max_epochs, random_weight_initialize)
+    def __init__(
+        self,
+        dataset: pandas.DataFrame,
+        learn_rate: float = 0.1,
+        max_epochs=1000,
+        random_weight_initialize: bool = True,
+        copy_dataset = False,
+    ) -> None:
+        super().__init__(dataset, learn_rate, max_epochs, random_weight_initialize, copy_dataset)
 
     def has_next(self):
         return self.error != 0 and self.current_epoch < self.max_epochs

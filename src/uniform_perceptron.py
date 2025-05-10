@@ -14,11 +14,12 @@ class UniformPerceptron(SimplePerceptron):
             activation_func: PerceptronFunction = PerceptronFunction.HYPERBOLIC,
             beta: float = 0.1,
             min_error: float = 0.0001,
+            copy_dataset = False,
         ) -> None: 
         self.activation_func = activation_func
         self.beta = beta
         self.min_error = min_error
-        super().__init__(dataset, learn_rate, max_epochs, random_weight_initialize)
+        super().__init__(dataset, learn_rate, max_epochs, random_weight_initialize, copy_dataset)
 
     def has_next(self):
         return np.abs(self.error) > self.min_error and self.current_epoch < self.max_epochs
