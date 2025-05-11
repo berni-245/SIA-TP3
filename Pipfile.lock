@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "46f8e1502baac6d15d9ebdd8071c782946a089b710d5fd5291928647333b4dcd"
+            "sha256": "5994cba73a0a612984efea96d3ac0def71ad2e1ad8f56082864a2193c231f33d"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -142,6 +142,15 @@
             ],
             "markers": "python_version >= '3.8'",
             "version": "==4.57.0"
+        },
+        "imageio": {
+            "hashes": [
+                "sha256:11efa15b87bc7871b61590326b2d635439acc321cf7f8ce996f812543ce10eed",
+                "sha256:71b57b3669666272c818497aebba2b4c5f20d5b37c81720e5e1a56d59c492996"
+            ],
+            "index": "pypi",
+            "markers": "python_version >= '3.9'",
+            "version": "==2.37.0"
         },
         "kiwisolver": {
             "hashes": [
