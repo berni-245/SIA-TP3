@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 from src.perceptron_function import PerceptronFunction
-from src.multilayer_perceptron import MultiLayerPerceptron, NeuralNet
+from src.multilayer_perceptron import MultiLayerPerceptron, NeuralNet, PerceptronOptimizer
 from src.binary_perceptron import BinaryPerceptron
 
 data_xor = pd.DataFrame({
@@ -12,7 +12,7 @@ data_xor = pd.DataFrame({
     'ev': [[1], [1], [-1],  [-1]]
 })
 
-neural_net: NeuralNet = NeuralNet(2, [4, 4, 2, 1], PerceptronFunction.HYPERBOLIC, 1)
+neural_net: NeuralNet = NeuralNet(2, [4, 4, 2, 1], PerceptronFunction.HYPERBOLIC, PerceptronOptimizer.ADAM)
 
 multi_layer_perceptron = MultiLayerPerceptron(neural_net, data_xor, learn_rate=0.1, min_error=0.001, max_epochs=10000)
 
@@ -54,13 +54,13 @@ expected_values = [[
 df['ev'] = expected_values
 
 
-neural_net: NeuralNet = NeuralNet(35, [16, 16, 10], PerceptronFunction.LOGISTICS, 1)
+neural_net: NeuralNet = NeuralNet(35, [16, 16, 10], PerceptronFunction.LOGISTICS, PerceptronOptimizer.ADAM)
 
-multi_layer_perceptron = MultiLayerPerceptron(neural_net, df, learn_rate=0.1, min_error=0.001, max_epochs=100000)
+multi_layer_perceptron = MultiLayerPerceptron(neural_net, df, learn_rate=0.01, min_error=0.001, max_epochs=100000)
 
 while (multi_layer_perceptron.has_next()):
-    print(f"Epoch: {multi_layer_perceptron.current_epoch}")
     multi_layer_perceptron.next_epoch()
+    print(f"Epoch: {multi_layer_perceptron.current_epoch} - Error: {round(multi_layer_perceptron.error, 5)}")
 
 for output, num in zip(multi_layer_perceptron.try_testing_set(df), range(df.size)):
     print(f"Num:{num} - prediction:{[round(float(val), 2) for val in output]}")
