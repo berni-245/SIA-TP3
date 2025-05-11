@@ -23,6 +23,11 @@ class NeuralNet:
         self.beta = beta
         self.data_error = 1
 
+        # ADAM state
+        self.t = 0  # time step
+        self.m = []  # first moment vector
+        self.v = []  # second moment vector
+
         prev_neuron_count = input_count
         for neurons in hidden_layers:
             if random_weight_initialize:
@@ -30,6 +35,9 @@ class NeuralNet:
             else:
                 weight_matrix = np.zeros((neurons, prev_neuron_count + 1))
             self.weights.append(weight_matrix)
+            # Initialize m and v for Adam
+            self.m.append(np.zeros_like(weight_matrix))
+            self.v.append(np.zeros_like(weight_matrix))
             prev_neuron_count = neurons
 
     def forward_pass(self, input_values: NDArray[np.float64]) -> NDArray[np.float64]:
@@ -48,7 +56,7 @@ class NeuralNet:
         return current_values  
 
 
-    def update_weights_per_data (  
+    def gradient_descent (  
         self,
         input_values: NDArray[np.float64],
         expected_output: NDArray[np.float64],
@@ -74,6 +82,37 @@ class NeuralNet:
                 # Remove bias weights from current layer, they don't have associated delta
                 weights_wo_bias = self.weights[i][:, 1:]
 
+                deltas = np.dot(weights_wo_bias.T, deltas) * self.activation_func.deriv(self.sums[i - 1], self.beta)
+
+    def momentum(
+    self,
+    input_values: NDArray[np.float64],
+    expected_output: NDArray[np.float64],
+    learning_rate: float = 0.1,
+    momentum: float = 0.9  # α
+):
+        final_output = self.forward_pass(input_values)
+
+        # Inicializar almacenamiento de deltas anteriores si no existe
+        if not hasattr(self, "prev_weight_updates"):
+            self.prev_weight_updates = [np.zeros_like(w) for w in self.weights]
+
+        self.data_error = 0
+        error = expected_output - final_output
+        self.data_error = np.sum(error**2)
+        deltas = error * self.activation_func.deriv(self.sums[-1], self.beta)
+
+        for i in reversed(range(len(self.weights))):
+            values = np.insert(self.values[i], 0, 1.0)  # agregar bias
+            gradient = np.outer(deltas, values)
+
+            # Momentum update: Δw(t+1) = -η * grad + α * Δw(t)
+            delta_w = learning_rate * gradient + momentum * self.prev_weight_updates[i]
+            self.weights[i] += delta_w
+            self.prev_weight_updates[i] = delta_w  
+
+            if i > 0:
+                weights_wo_bias = self.weights[i][:, 1:]
                 deltas = np.dot(weights_wo_bias.T, deltas) * self.activation_func.deriv(self.sums[i - 1], self.beta)
 
 class MultiLayerPerceptron():
@@ -124,7 +163,7 @@ class MultiLayerPerceptron():
         self.current_epoch += 1
         for _, row in self.dataset.iterrows():
             inputs = row[self.col_labels].values.astype(float)
-            self.neural_net.update_weights_per_data(inputs, row['ev'], self.learn_rate)
+            self.neural_net.momentum(inputs, row['ev'], self.learn_rate)
             self.error += self.neural_net.data_error
         self.error /= 2
                         
