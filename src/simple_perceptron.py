@@ -80,8 +80,8 @@ class SimplePerceptron(ABC):
     
     def try_testing_set(self, testing_set: pandas.DataFrame):
         """
-        testing_set: DataFrame con columnas 'x1', ..., 'xn' y 'ev' (expected value).
-        Devuelve una copia del DataFrame con una nueva columna 'pred' con los resultados del perceptrón.
+        testing_set: DataFrame with columns 'x1', ..., 'xn'.
+        Returns an array of the prediction for each row
         """
         predictions = []
 
