@@ -1,49 +1,66 @@
+from time import sleep
 import matplotlib.pyplot as plt
 import pandas as pd
+import numpy as np
+from src.perceptron_function import PerceptronFunction
+from src.multilayer_perceptron import MultiLayerPerceptron, NeuralNet
 from src.binary_perceptron import BinaryPerceptron
 
-# Datos para el AND
-data_and = pd.DataFrame({
+data_xor = pd.DataFrame({
     'x1': [-1,  1, -1,  1],
     'x2': [ 1, -1, -1,  1],
-    'ev': [-1, -1, -1,  1]
+    'ev': [[1], [1], [-1],  [-1]]
 })
 
-# Inicializamos el perceptrón
-perceptron = BinaryPerceptron(data_and)
+neural_net: NeuralNet = NeuralNet(2, [4, 4, 2, 1], PerceptronFunction.HYPERBOLIC, 1)
 
-# Función para graficar la frontera de decisión
-def plot_decision_boundary(weights, epoch):
-    # Limites del plano
-    x_vals = [-2, 2]
-    if weights[2] == 0:
-        y_vals = [0, 0]
-    else:
-        y_vals = [-(weights[0] + weights[1]*x)/weights[2] for x in x_vals]
-    
-    plt.clf()
-    # Dibuja los puntos
-    for _, row in data_and.iterrows():
-        color = 'blue' if row['ev'] == 1 else 'red'
-        plt.scatter(row['x1'], row['x2'], c=color, label=f"ev={row['ev']}")
-    # Línea de decisión
-    plt.plot(x_vals, y_vals, 'k--', label='Boundary')
-    plt.xlim(-2, 2)
-    plt.ylim(-2, 2)
-    plt.title(f'Época {epoch} - Weights: {weights.round(2)}')
-    plt.xlabel('x1')
-    plt.ylabel('x2')
-    plt.grid(True)
-    plt.pause(0.5)
+multi_layer_perceptron = MultiLayerPerceptron(neural_net, data_xor, learn_rate=0.1, min_error=0.001, max_epochs=10000)
 
-# Mostrar en vivo
-plt.ion()
-plot_decision_boundary(perceptron.weights, perceptron.current_epoch)
-while perceptron.has_next():
-    perceptron.next_epoch()
-    plot_decision_boundary(perceptron.weights, perceptron.current_epoch)
-print("End!")
-print(f"with 1 and -1, output: {perceptron.try_current_epoch([1, -1])}")
-print(f"with 1 and 1, output: {perceptron.try_current_epoch([1, 1])}")
-plt.ioff()
-plt.show()
+while (multi_layer_perceptron.has_next()):
+    print(f"Epoch: {multi_layer_perceptron.current_epoch}")
+    multi_layer_perceptron.next_epoch()
+
+print(multi_layer_perceptron.try_testing_set(data_xor))
+
+print("Sleeping for 10 seconds before next test")
+sleep(10)
+
+# ---
+
+# Leer el archivo como líneas
+with open("data/TP3-ej3-digitos.txt", "r") as f:
+    lines = [line.strip() for line in f if line.strip()]
+
+# Cada número ocupa 7 líneas
+num_lines_per_digit = 7
+pixels_per_line = 5
+
+# Total de dígitos
+num_digits = len(lines) // num_lines_per_digit
+
+data = []
+for i in range(num_digits):
+    digit_lines = lines[i * num_lines_per_digit : (i + 1) * num_lines_per_digit]
+    # Aplanar los 7x5 a 1x35
+    pixels = [int(ch) for line in digit_lines for ch in line.split()]
+    data.append(pixels)
+
+# Crear el DataFrame con columnas x0, x1, ..., x34
+df = pd.DataFrame(data, columns=[f'x{i+1}' for i in range(35)])
+
+expected_values = [[
+    int(0==i), int(1==i), int(2==i), int(3==i), int(4==i), int(5==i), int(6==i), int(7==i), int(8==i), int(9==i)
+    ] for i in range(len(df))]  
+df['ev'] = expected_values
+
+
+neural_net: NeuralNet = NeuralNet(35, [16, 16, 10], PerceptronFunction.LOGISTICS, 1)
+
+multi_layer_perceptron = MultiLayerPerceptron(neural_net, df, learn_rate=0.1, min_error=0.001, max_epochs=100000)
+
+while (multi_layer_perceptron.has_next()):
+    print(f"Epoch: {multi_layer_perceptron.current_epoch}")
+    multi_layer_perceptron.next_epoch()
+
+for output, num in zip(multi_layer_perceptron.try_testing_set(df), range(df.size)):
+    print(f"Num:{num} - prediction:{[round(float(val), 2) for val in output]}")

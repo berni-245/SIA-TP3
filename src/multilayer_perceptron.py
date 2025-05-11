@@ -60,7 +60,7 @@ class NeuralNet:
         self.data_error = 0
         error = expected_output - final_output
         self.data_error = np.sum(error**2)
-        deltas = error * -1 * self.activation_func.deriv(self.sums[-1], self.beta)
+        deltas = error * self.activation_func.deriv(self.sums[-1], self.beta)
 
         # Backpropagate deltas and update weights
         for i in reversed(range(len(self.weights))):
@@ -111,7 +111,7 @@ class MultiLayerPerceptron():
         self.max_epochs = max_epochs
 
         self.min_error = min_error
-        self.error = 1
+        self.error = 100
         self.current_epoch = 0
 
     def has_next(self) -> bool:
@@ -126,6 +126,7 @@ class MultiLayerPerceptron():
             inputs = row[self.col_labels].values.astype(float)
             self.neural_net.update_weights_per_data(inputs, row['ev'], self.learn_rate)
             self.error += self.neural_net.data_error
+        self.error /= 2
                         
     def try_current_epoch(self, inputs: List[float]):
         """
