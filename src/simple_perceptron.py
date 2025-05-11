@@ -6,35 +6,48 @@ from numpy.typing import NDArray
 
 
 class SimplePerceptron(ABC):
-    def __init__(self, dataset: pandas.DataFrame, learn_rate: float = 0.1, max_epochs = 1000, random_weight_initialize: bool = True) -> None:
+    def __init__(
+        self,
+        dataset: pandas.DataFrame,
+        learn_rate: float = 0.1,
+        max_epochs = 1000,
+        random_weight_initialize: bool = True,
+        copy_dataset = False,
+    ) -> None:
         """
         dataset: DataFrame with cols 'x1', 'x2', ..., 'xn' and 'ev' (expected value) as final col
 
         learn_rate: value between 0 and 1, higher value = bigger steps, usually between 0 and 0.1
         """
 
-        if 'ev' not in dataset.columns:
+        if copy_dataset:
+            self.dataset = dataset.copy(True)
+        else:
+            self.dataset = dataset
+
+        if 'ev' not in self.dataset.columns:
             raise ValueError("Missing 'ev' column for expected output.")
 
         input_cols = sorted(
-            [col for col in dataset.columns if col.startswith('x')]
+            [col for col in self.dataset.columns if col.startswith('x')]
         )
 
         if len(input_cols) <= 0:
             raise ValueError("At least one input column 'x1', ..., 'xn' is required.")
 
-        dataset.insert(0, 'x0', 1) # for the bias
+        self.dataset.insert(0, 'x0', 1) # for the bias
         input_cols = ['x0'] + input_cols
 
-        expected_cols = input_cols + ['ev']
-        dataset = dataset[expected_cols] # sorts the dataset cols in the given order
+        expected_cols: List[str] = input_cols + ['ev']
+        # Sorts the dataset cols in the given order.
+        self.dataset = self.dataset[expected_cols] # type: ignore[assignment]
 
         self.col_labels = input_cols
         if random_weight_initialize:
             self.weights = np.random.uniform(-1, 1, len(input_cols))
         else:
             self.weights = np.zeros(len(input_cols))
-        self.dataset = dataset
+
         self.learn_rate = learn_rate
         self.max_epochs = max_epochs
 
