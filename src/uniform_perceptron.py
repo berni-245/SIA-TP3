@@ -38,4 +38,11 @@ class UniformPerceptron(SimplePerceptron):
     def _calc_weight_adjustment(self, inputs: np.ndarray, delta: float) -> None:
         self.weights += self.learn_rate * delta * inputs * self.activation_func.deriv(np.dot(self.weights, inputs), self.beta)
 
+    def unnormalize(self):
+        Y = self.try_testing_set(self.dataset)
+        if self.activation_func.image != None:
+            (min, max) = self.activation_func.image
+            Y = (Y - min)*(self.max_ev - self.min_ev)/(max - min) + self.min_ev
+
+        return Y
 
