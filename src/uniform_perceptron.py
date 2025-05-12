@@ -15,17 +15,21 @@ class UniformPerceptron(SimplePerceptron):
             activation_func: PerceptronFunction = PerceptronFunction.HYPERBOLIC,
             beta: float = 1,
             min_error: float = 1,
+            batch_update: int = 1,
             copy_dataset = False,
         ) -> None: 
         super().__init__(dataset, learn_rate, max_epochs, random_weight_initialize, copy_dataset, min_error)
         self.activation_func = activation_func
         self.beta = beta
+        self.accumulated_weights = np.zeros(len(self.col_labels))
+        self.min_data_batch_for_update = max(1, min(batch_update, len(self.dataset.index))) 
+        self.data_update_count = 0
         if activation_func.image != None:
             Y = self.dataset['ev']
             self.min_ev = np.min(Y)
             self.max_ev = np.max(Y)
-            (min, max) = activation_func.image
-            self.dataset['ev'] = min + ((Y - self.min_ev)*(max - min))/(self.max_ev - self.min_ev)
+            (min_val, max_val) = activation_func.image
+            self.dataset['ev'] = min_val + ((Y - self.min_ev)*(max_val - min_val))/(self.max_ev - self.min_ev)
 
     def has_next(self):
         return np.abs(self.error) > self.min_error and self.current_epoch < self.max_epochs
@@ -37,7 +41,12 @@ class UniformPerceptron(SimplePerceptron):
         return self.activation_func.func(weighted_sum, self.beta)
 
     def _calc_weight_adjustment(self, inputs: np.ndarray, delta: float) -> None:
-        self.weights += self.learn_rate * delta * inputs * self.activation_func.deriv(np.dot(self.weights, inputs), self.beta)
+        self.accumulated_weights += self.learn_rate * delta * inputs * self.activation_func.deriv(np.dot(self.weights, inputs), self.beta)
+        self.data_update_count += 1
+        if self.data_update_count % self.min_data_batch_for_update == 0:
+            self.weights += self.accumulated_weights
+            self.accumulated_weights = np.zeros(len(self.col_labels))
+            self.data_update_count = 0
 
     def try_current_epoch(self, inputs: List[float]):
         output = super().try_current_epoch(inputs)

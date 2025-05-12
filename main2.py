@@ -25,7 +25,7 @@ train_data, test_data = split_result
 # data = pd.DataFrame({'x1': x1, 'ev': ev})
 
 print(f'{data}')
-perceptron = UniformPerceptron(train_data, 0.001, 100000, True, PerceptronFunction.HYPERBOLIC, min_error=0.0136)
+perceptron = UniformPerceptron(train_data, 0.001, 100000, True, PerceptronFunction.HYPERBOLIC, min_error=0.0136, batch_update=5)
 print(f'{perceptron.dataset}')
 
 perceptron.weights = [-0.97353694, 0.11161117, -0.35319005, 0.56622124]
