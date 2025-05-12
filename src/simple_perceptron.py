@@ -13,6 +13,7 @@ class SimplePerceptron(ABC):
         max_epochs = 1000,
         random_weight_initialize: bool = True,
         copy_dataset = False,
+        min_error: float = 0,
     ) -> None:
         """
         dataset: DataFrame with cols 'x1', 'x2', ..., 'xn' and 'ev' (expected value) as final col
@@ -51,7 +52,8 @@ class SimplePerceptron(ABC):
         self.learn_rate = learn_rate
         self.max_epochs = max_epochs
 
-        self.error = 1
+        self.min_error = min_error
+        self.error = min_error + 1
         self.current_epoch = 0
 
     @abstractmethod
@@ -63,8 +65,8 @@ class SimplePerceptron(ABC):
             raise Exception("Solution was already found or max epochs were reached")
         self.error = 0
         self.current_epoch += 1
-        for i, row in self.dataset.iterrows():
-            inputs = row[self.col_labels].values.astype(float)
+        for _, row in self.dataset.iterrows():
+            inputs = row[self.col_labels].values.astype(float) # type: ignore[assignment]
             output = self._activation_func(np.dot(self.weights, inputs))
             delta = row['ev'] - output
             self._calc_weight_adjustment(inputs, delta)
