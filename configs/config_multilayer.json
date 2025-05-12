@@ -1,0 +1,12 @@
+{
+    "problem": "parity",
+    "test_percentage": 0.2,
+    "hidden_layers": [16, 16],
+    "learn_rate": 0.01,
+    "min_error": 0.001,
+    "max_epochs": 10000,
+    "function": "logistics",
+    "optimizer": "adam",
+    "beta": 1.0,
+    "random_weight_initialize": true
+}

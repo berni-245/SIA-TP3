@@ -5,23 +5,33 @@ import pandas as pd
 import imageio.v2 as imageio
 import tempfile
 import os
+import json
 from src.binary_perceptron import BinaryPerceptron
 
-# Datos para el AND
-data = pd.DataFrame({
+ # AND data
+and_data = pd.DataFrame({
+    'x1': [-1, -1,  1,  1],
+    'x2': [-1,  1, -1,  1],
+    'ev': [-1,  -1,  -1, 1],
+})
+
+# XOR data
+xor_data = pd.DataFrame({
     'x1': [-1, -1,  1,  1],
     'x2': [-1,  1, -1,  1],
     'ev': [-1,  1,  1, -1],
 })
 
-# Inicializamos el perceptrón
-perceptron = BinaryPerceptron(data, 0.001, 100, False)
+with open("configs/config_step.json", "r") as f:
+    config = json.load(f)
 
-# Directorio temporal para guardar los frames
+data = and_data if config["test_and"] else xor_data
+
+perceptron = BinaryPerceptron(data, config["learn_rate"], config["max_epochs"], config["random_weight_initialize"])
+
 temp_dir = tempfile.mkdtemp()
 frames = []
 
-# Función para graficar la frontera de decisión
 def plot_decision_boundary(weights, epoch, filename):
     x_vals = [-2, 2]
     if weights[2] == 0:
@@ -44,26 +54,25 @@ def plot_decision_boundary(weights, epoch, filename):
     plt.savefig(filename)
     plt.close()
 
-# Primera imagen
 frame_path = os.path.join(temp_dir, f"frame_000.png")
 plot_decision_boundary(perceptron.weights, perceptron.current_epoch, frame_path)
 frames.append(frame_path)
 
-# Iterar y guardar frames
+# Iterate and save frames
 while perceptron.has_next():
+    print(f'{perceptron.current_epoch} - error: {perceptron.error}')
     perceptron.next_epoch()
     frame_path = os.path.join(temp_dir, f"frame_{perceptron.current_epoch:03}.png")
     plot_decision_boundary(perceptron.weights, perceptron.current_epoch, frame_path)
     frames.append(frame_path)
 
-# Crear GIF
+# Create gif
 images: List[ArrayLike] = [imageio.imread(f) for f in frames]
-filename = "./results/perceptron.gif"
+filename = "./perceptron.gif"
 kargs = {'duration': 50}
-imageio.mimsave(filename, images, 'GIF', **kargs)
+imageio.mimsave(filename, images, 'GIF', **kargs) # type: ignore[assignment]
 print(f"GIF saved as {filename}")
 
-# Limpieza opcional del directorio temporal
 for f in frames:
     os.remove(f)
 os.rmdir(temp_dir)

@@ -1,0 +1,10 @@
+{
+    "test_percentage": 0.3,
+    "learn_rate": 0.01,
+    "max_epochs": 1000,
+    "random_weight_initialize": true,
+    "function": "hyperbolic",
+    "beta": 1.0,
+    "min_error": 0.013,
+    "batch_update": 5
+}
