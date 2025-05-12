@@ -20,11 +20,11 @@ class UniformPerceptron(SimplePerceptron):
         self.activation_func = activation_func
         self.beta = beta
         if activation_func.image != None:
-            Y = dataset['ev']
-            min_ev = np.min(Y)
-            max_ev = np.max(Y)
+            Y = self.dataset['ev']
+            self.min_ev = np.min(Y)
+            self.max_ev = np.max(Y)
             (min, max) = activation_func.image
-            dataset['ev'] = min + ((Y - min_ev)*(max - min))/(max_ev - min_ev)
+            self.dataset['ev'] = min + ((Y - self.min_ev)*(max - min))/(self.max_ev - self.min_ev)
 
     def has_next(self):
         return np.abs(self.error) > self.min_error and self.current_epoch < self.max_epochs
