@@ -13,6 +13,10 @@ class PerceptronOptimizer(Enum):
     MOMENTUM = 1
     ADAM = 2
 
+    @classmethod
+    def from_string(cls, name: str):
+        return cls[name.upper()]
+
 class NeuralNet:
     def __init__(
     self,

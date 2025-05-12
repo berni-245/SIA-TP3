@@ -36,3 +36,7 @@ class PerceptronFunction(Enum):
 
     def deriv(self, x: Union[float, NDArray[np.float64]], beta: float) -> Any:
         return self._deriv(x, beta)
+    
+    @classmethod
+    def from_string(cls, name: str):
+        return cls[name.upper()]
