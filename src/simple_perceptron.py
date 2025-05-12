@@ -98,11 +98,11 @@ class SimplePerceptron(ABC):
         testing_set: DataFrame with columns 'x1', ..., 'xn'.
         Returns an array of the prediction for each row
         """
-        predictions = []
+        predictions: List[float] = []
 
         for _, row in testing_set.iterrows():
             inputs = row[self.col_labels[1:]].tolist()  # skip x0
             prediction = self.try_current_epoch(inputs)
             predictions.append(prediction)
 
-        return predictions
+        return np.array(predictions)
