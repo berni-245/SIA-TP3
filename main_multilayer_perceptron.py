@@ -48,13 +48,17 @@ data_digits['ev'] = expected_values
 
 data = data_xor if config["problem"] == "xor" else data_digits
 
-print(data)
-print(f"This is the dataframe used for this perceptron, it will split in {(1 - config['test_percentage'])*100}% training set and {config['test_percentage']*100}% testing set")
-sleep(5)
+if config["test_with_train_data"]:
+    train_data = data.copy()
+    test_data = data.copy()
+else:
+    print(data)
+    print(f"This is the dataframe used for this perceptron, it will split in {(1 - config['test_percentage'])*100}% training set and {config['test_percentage']*100}% testing set")
+    sleep(5)
 
 
-split_result: Tuple[pd.DataFrame, pd.DataFrame] = train_test_split(data, test_size=config["test_percentage"]) # type: ignore[assignment]
-train_data, test_data = split_result
+    split_result: Tuple[pd.DataFrame, pd.DataFrame] = train_test_split(data, test_size=config["test_percentage"]) # type: ignore[assignment]
+    train_data, test_data = split_result
 
 layers: List[int] = config["hidden_layers"]
 layers.append(len(data['ev'][0]))
@@ -79,9 +83,12 @@ multi_layer_perceptron = MultiLayerPerceptron(
 while (multi_layer_perceptron.has_next()):
     multi_layer_perceptron.next_epoch()
     print(f'{multi_layer_perceptron.current_epoch} - error: {multi_layer_perceptron.error}')
+print("Training ended")
 
-print("Results with the testing set (unseen data):")
+print("Results with the testing set:")
 sleep(1)
 for output, num in zip(multi_layer_perceptron.try_testing_set(test_data), test_data['ev']):
     print(f"Expected value:{num} - prediction:{[round(float(val), 2) for val in output]}")
-print("The model can't generalize if not with a lot of data")
+
+if not config["test_with_train_data"]:
+    print("The model can't generalize if not with a lot of data")

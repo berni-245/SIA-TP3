@@ -1,6 +1,7 @@
 {
-    "problem": "parity",
+    "problem": "digits",
     "test_percentage": 0.2,
+    "test_with_train_data": true,
     "hidden_layers": [16, 16],
     "learn_rate": 0.01,
     "min_error": 0.001,

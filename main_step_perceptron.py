@@ -65,6 +65,7 @@ while perceptron.has_next():
     frame_path = os.path.join(temp_dir, f"frame_{perceptron.current_epoch:03}.png")
     plot_decision_boundary(perceptron.weights, perceptron.current_epoch, frame_path)
     frames.append(frame_path)
+print("Training ended")
 
 # Create gif
 images: List[ArrayLike] = [imageio.imread(f) for f in frames]

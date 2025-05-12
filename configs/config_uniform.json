@@ -1,5 +1,6 @@
 {
     "test_percentage": 0.3,
+    "test_with_train_data": false,
     "learn_rate": 0.01,
     "max_epochs": 1000,
     "random_weight_initialize": true,
