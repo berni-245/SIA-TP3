@@ -39,10 +39,6 @@ class SimplePerceptron(ABC):
         self.dataset.insert(0, 'x0', 1) # for the bias
         input_cols = ['x0'] + input_cols
 
-        expected_cols: List[str] = input_cols + ['ev']
-        # Sorts the dataset cols in the given order.
-        self.dataset = self.dataset[expected_cols] # type: ignore[assignment]
-
         self.col_labels = input_cols
         if random_weight_initialize:
             self.weights = np.random.uniform(-1, 1, len(input_cols))
