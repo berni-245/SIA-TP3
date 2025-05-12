@@ -8,6 +8,7 @@ numpy = "*"
 pandas = "*"
 matplotlib = "*"
 imageio = "*"
+scikit-learn = "*"
 
 [dev-packages]
 

@@ -1,10 +1,14 @@
+from typing import Tuple
 import pandas as pd
 import numpy as np
+from sklearn.model_selection import train_test_split
 
 from src.perceptron_function import PerceptronFunction
 from src.uniform_perceptron import UniformPerceptron
 
 data = pd.read_csv('./data/TP3-ej2-conjunto.csv')
+split_result: Tuple[pd.DataFrame, pd.DataFrame] = train_test_split(data, test_size=0.2, random_state=42) # type: ignore[assignment]
+train_data, test_data = split_result
 
 # values = {
 #     "x1": [-10.000000, -7.777778, -5.555556, -3.333333, -1.111111,
@@ -20,8 +24,11 @@ data = pd.read_csv('./data/TP3-ej2-conjunto.csv')
 # ev = x1 + noise
 # data = pd.DataFrame({'x1': x1, 'ev': ev})
 
-perceptron = UniformPerceptron(data, 0.1, 1000, True, PerceptronFunction.HYPERBOLIC, min_error=0.01)
-print(f'before before:\n{data}')
+print(f'{data}')
+perceptron = UniformPerceptron(train_data, 0.001, 100000, True, PerceptronFunction.HYPERBOLIC, min_error=0.0136)
+print(f'{perceptron.dataset}')
+
+perceptron.weights = [-0.97353694, 0.11161117, -0.35319005, 0.56622124]
 
 import warnings
 
@@ -37,3 +44,9 @@ with warnings.catch_warnings():
     except Exception as e:
         print(e)
 
+
+Y = perceptron.try_testing_set(test_data)
+
+test_data['calculated'] = Y
+
+print(test_data)
