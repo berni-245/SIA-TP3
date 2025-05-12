@@ -1,4 +1,4 @@
-import pandas
+import pandas as pd
 import numpy as np
 
 from src.perceptron_function import PerceptronFunction
@@ -7,7 +7,7 @@ from src.simple_perceptron import SimplePerceptron
 class UniformPerceptron(SimplePerceptron):
     def __init__(
             self,
-            dataset: pandas.DataFrame,
+            dataset: pd.DataFrame,
             learn_rate: float = 0.1,
             max_epochs=1000,
             random_weight_initialize: bool = True,
@@ -38,8 +38,8 @@ class UniformPerceptron(SimplePerceptron):
     def _calc_weight_adjustment(self, inputs: np.ndarray, delta: float) -> None:
         self.weights += self.learn_rate * delta * inputs * self.activation_func.deriv(np.dot(self.weights, inputs), self.beta)
 
-    def unnormalize(self):
-        Y = self.try_testing_set(self.dataset)
+    def try_testing_set(self, testing_set: pd.DataFrame):
+        Y = super().try_testing_set(testing_set)
         if self.activation_func.image != None:
             (min, max) = self.activation_func.image
             Y = (Y - min)*(self.max_ev - self.min_ev)/(max - min) + self.min_ev
