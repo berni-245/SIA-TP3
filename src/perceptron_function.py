@@ -6,13 +6,13 @@ from typing import Any, Callable, Tuple, Union
 
 class PerceptronFunction(Enum):
     HYPERBOLIC = (
-        lambda x, beta: np.tanh(beta * x),
-        lambda x, beta: beta * (1 - np.tanh(beta * x) ** 2),
+        lambda x, beta: np.tanh(np.clip(-50, beta * x, 50)),
+        lambda x, beta: beta * (1 - np.tanh(np.clip(-50, beta * x, 50)) ** 2),
         (-1, 1),
     )
     LOGISTICS = (
-        lambda x, beta: 1 / (1 + np.exp(-2 * beta * x)),
-        lambda x, beta: 2 * beta * (1 / (1 + np.exp(-2 * beta * x))) * (1 - (1 / (1 + np.exp(-2 * beta * x)))),
+        lambda x, beta: 1 / (1 + np.exp(np.clip(-50, -2 * beta * x, 50))),
+        lambda x, beta: 2 * beta * (1 / (1 + np.exp(np.clip(-50, -2 * beta * x, 50)))) * (1 - (1 / (1 + np.exp(np.clip(-50, -2 * beta * x, 50))))),
         (0, 1),
     )
     LINEAR = (
