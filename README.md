@@ -44,7 +44,7 @@ Si querés configurar el main `main_step_perceptron.py`, tenés el archivo [`con
 - `random_weight_initialize`: [bool] True para empezar con pesos aleatorios entre -1 y 1, False para empezar con pesos en 0
 - `test_and`: [bool] True para probar el problema And, False para el problema XOR
 
-Si querés configurar el main `main_uniform_perceptron.py`, tenés el archivo [`config_step.json`](configs/config_uniform.json) que cuenta con los hiperparámetros:
+Si querés configurar el main `main_uniform_perceptron.py`, tenés el archivo [`config_uniform.json`](configs/config_uniform.json) que cuenta con los hiperparámetros:
 - `test_percentage`: [float entre 0-1] para elegir el porcentaje tomado del dataset para ser testing set
 - `test_with_train_data`: [bool] True para no separar en train dataset y test dataset, y simplemente entrenar y luego testear con el mismo dataset completo (útil para asegurarse que funciona el entrenamiento), false en el caso contrario
 - `learn_rate`: [float] la tasa de aprendizaje para la actualización de pesos
@@ -55,7 +55,7 @@ Si querés configurar el main `main_uniform_perceptron.py`, tenés el archivo [`
 - `min_error`: [float] el error mínimo para dejar de iterar
 - `batch_update`: [int] para este main solo se agrega la posibilidad de modificar los pesos cada cierto número de datos, el valor ingresado será ese número
 
-Si querés configurar el main `main_multilayer_perceptron.py`, tenés el archivo [`config_step.json`](configs/config_multilayer.json) que cuenta con los hiperparámetros:
+Si querés configurar el main `main_multilayer_perceptron.py`, tenés el archivo [`config_multilayer.json`](configs/config_multilayer.json) que cuenta con los hiperparámetros:
 - `problem`: [str entre "XOR", "PARITY", "DIGITS"] para elegir el problema a resolver
 - `hidden_layers`: [List[int]] arreglo con la cantidad de neuronas para cada capa oculta, la cantidad de elementos en el arreglo será la cantidad de capas ocultas
 - `test_percentage`: [float entre 0-1] para elegir el porcentaje tomado del dataset para ser testing set
@@ -79,6 +79,6 @@ Siendo \<main deseado> una de estas opciones:
 - `main_uniform_perceptron.py` 
 - `main_multilayer_perceptron.py`
 
-Se imprimirá en stdout el error y época actual. En el caso del `main_step_perceptron.py`, se generará un GIF para ver como se separa linealmente los datos (por esta generación, este perceptrón va un poco más lento que los otros).
+Se imprimirá en stdout el error y época actual. En el caso del `main_step_perceptron.py`, se generará un GIF para ver como se separa linealmente los datos (por esta generación de GIF, este perceptrón va un poco más lento que los otros).
 
 Para abrir el google Colab dónde se realizaron las pruebas ir al siguiente [link](https://colab.research.google.com/drive/1g6m9iIVd1q4IE0GQ9GoGSwTa-zh8L5bb?usp=sharing)
